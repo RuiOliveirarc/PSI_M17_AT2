@@ -23,3 +23,8 @@ Users:
 {{$livro->user->name}}
 
 @endif
+
+<br>
+@if(isset($livro->imagem_capa))
+	<img src="{{asset('imagens/livros/'.$livro->imagem_capa)}}">
+@endif

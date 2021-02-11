@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Livro;
 use App\Models\Genero;
 use App\Models\Autor;
@@ -58,11 +59,22 @@ class LivrosController extends Controller
             'data_edicao'=>['nullable','date'],
             'isbn'=>['required','min:3','max:13'],
             'observacoes'=>['nullable','min:3','max:255'],
-            'imagem_capa'=>['nullable'],
+            'imagem_capa'=>['image','nullable','max:2000'],
             'id_genero'=>['numeric','nullable'],
             'sinopse'=>['nullable','min:3','max:255'],
             'id_user'=>['numeric','nullable'],
         ]);
+
+        if($request->hasFile('imagem_capa')){
+            $nomeImagem=$request->file('imagem_capa')->getClientOriginalName();
+
+            $nomeImagem=time().'_'.$nomeImagem;
+            $guardarImagem = $request->file('imagem_capa')->storeAs('img/', $nomeImagem);
+            
+            $novolivro['imagem_capa']=$nomeImagem;
+        }
+
+
         $autores=$request->id_autor;
         $editoras=$request->id_editora;
 
@@ -70,6 +82,8 @@ class LivrosController extends Controller
             $userAtual=Auth::user()->id;
             $livro['id_user']=$userAtual;
         }
+
+
 
 
         $livro=Livro::create($novoLivro);
@@ -84,6 +98,20 @@ class LivrosController extends Controller
 
 
     public function edit(Request $request){
+
+        if($request->hasFile('imagem_capa')){
+            $nomeImagem=$request->file('imagem_capa')->getClientOriginalName();
+
+            $nomeImagem=time().'_'.$nomeImagem;
+            $guardarImagem = $request->file('imagem_capa')->storeAs('imagens/livros', $nomeImagem);
+            
+            if(!is_null($imagemAntiga)){
+                Storage::Delete('img/'.$imagemAntiga);
+            }
+
+            $atualizarlivro['imagem_capa']=$nomeImagem;
+        }
+
         $idLivro=$request->id;
         $livro=Livro::where('id_livro',$idLivro)->with('autores','editoras')->first();
         if(Gate::allows('atualizar-livro',$livro)||Gate::allows('admin')){
@@ -123,6 +151,7 @@ class LivrosController extends Controller
 
         $idLivro=$request->id;
         $livro=Livro::findOrFail($idLivro);
+        $imagemAntiga=$livro->imagem_capa;
 
         $atualizarLivro=$request->validate([
             'titulo'=>['required','min:3','max:100'],
@@ -131,11 +160,22 @@ class LivrosController extends Controller
             'data_edicao'=>['nullable','date'],
             'isbn'=>['required','min:3','max:13'],
             'observacoes'=>['nullable','min:3','max:255'],
-            'imagem_capa'=>['nullable'],
+            'imagem_capa'=>['nullable','imagem','max:2000'],
             'id_genero'=>['numeric','nullable'],
             'id_autor'=>['numeric','nullable'],
             'sinopse'=>['nullable','min:3','max:255'],
         ]);
+
+        if($request->hasFile('imagem_capa')){
+            $nomeImagem=$request->file('imagem_capa')->getClientOriginalName();
+
+            $nomeImagem=time().'_'.$nomeImagem;
+            $guardarImagem = $request->file('imagem_capa')->storeAs('img/', $nomeImagem);
+            
+            $atualizarlivro['imagem_capa']=$nomeImagem;
+        }
+
+        
         $autores=$request->id_autor;
         $editoras=$request->id_editora;
         $livro->update($atualizarLivro);

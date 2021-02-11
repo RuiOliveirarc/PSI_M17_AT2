@@ -11,7 +11,7 @@
 
 	@section('conteudo')
 
-<form action="{{route('livros.store')}}" method="post">
+<form action="{{route('livros.store')}}" enctype="multipart/form-data" method="post">
 
 	@csrf
 
@@ -56,7 +56,7 @@
 			Deverá indicar observacoes correto<br>
 		@endif
 
-	Imagem capa: <input type="text" name="imagem_capa">
+	Imagem capa: <input type="file" name="imagem_capa">
 	<br>
 
 		@if ($errors->has('imagem_capa'))
