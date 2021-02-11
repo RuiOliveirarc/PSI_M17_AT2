@@ -61,7 +61,7 @@ class LivrosController extends Controller
             'observacoes'=>['nullable','min:3','max:255'],
             'imagem_capa'=>['image','nullable','max:2000'],
             'id_genero'=>['numeric','nullable'],
-            'sinopse'=>['nullable','min:3','max:255'],
+            'sinopse'=>['file','mimes:pdf','max:2000'],
             'id_user'=>['numeric','nullable'],
         ]);
 
@@ -69,11 +69,19 @@ class LivrosController extends Controller
             $nomeImagem=$request->file('imagem_capa')->getClientOriginalName();
 
             $nomeImagem=time().'_'.$nomeImagem;
-            $guardarImagem = $request->file('imagem_capa')->storeAs('img/', $nomeImagem);
+            $guardarImagem = $request->file('imagem_capa')->storeAs('imagens/livros', $nomeImagem);
             
-            $novolivro['imagem_capa']=$nomeImagem;
+            $novoLivro['imagem_capa']=$nomeImagem;
         }
 
+        if($request->hasFile('sinopse')){
+            $nomeSinopse=$request->file('sinopse')->getClientOriginalName();
+
+            $nomeSinopse=time().'_'.$nomeSinopse;
+            $guardarSinopse = $request->file('sinopse')->storeAs('sinopse/livros', $nomeSinopse);
+            
+            $novoLivro['sinopse']=$nomeSinopse;
+        }
 
         $autores=$request->id_autor;
         $editoras=$request->id_editora;
@@ -106,10 +114,23 @@ class LivrosController extends Controller
             $guardarImagem = $request->file('imagem_capa')->storeAs('imagens/livros', $nomeImagem);
             
             if(!is_null($imagemAntiga)){
-                Storage::Delete('img/'.$imagemAntiga);
+                Storage::Delete('imagens/livros'.$imagemAntiga);
             }
 
             $atualizarlivro['imagem_capa']=$nomeImagem;
+        }
+
+        if($request->hasFile('sinopse')){
+            $nomeSinopse=$request->file('sinopse')->getClientOriginalName();
+
+            $nomeSinopse=time().'_'.$nomeSinopse;
+            $guardarSinopse = $request->file('sinopse')->storeAs('sinopse/livros', $nomeSinopse);
+            
+            if(!is_null($sinopseAntiga)){
+                Storage::Delete('sinopse/livros'.$sinopseAntiga);
+            }
+
+            $atualizarLivro['sinopse']=$nomeSinopse;
         }
 
         $idLivro=$request->id;
@@ -163,19 +184,28 @@ class LivrosController extends Controller
             'imagem_capa'=>['nullable','imagem','max:2000'],
             'id_genero'=>['numeric','nullable'],
             'id_autor'=>['numeric','nullable'],
-            'sinopse'=>['nullable','min:3','max:255'],
+            'sinopse'=>['file','mimes:pdf','max:2000'],
         ]);
 
         if($request->hasFile('imagem_capa')){
             $nomeImagem=$request->file('imagem_capa')->getClientOriginalName();
 
             $nomeImagem=time().'_'.$nomeImagem;
-            $guardarImagem = $request->file('imagem_capa')->storeAs('img/', $nomeImagem);
+            $guardarImagem = $request->file('imagem_capa')->storeAs('imagens/livros', $nomeImagem);
             
-            $atualizarlivro['imagem_capa']=$nomeImagem;
+            $atualizarLivro['imagem_capa']=$nomeImagem;
         }
 
-        
+        if($request->hasFile('sinopse')){
+            $nomeSinopse=$request->file('sinopse')->getClientOriginalName();
+
+            $nomeSinopse=time().'_'.$nomeSinopse;
+            $guardarSinopse = $request->file('sinopse')->storeAs('sinopse/livros', $nomeSinopse);
+            
+            $atualizarLivro['sinopse']=$nomeSinopse;
+        }  
+
+
         $autores=$request->id_autor;
         $editoras=$request->id_editora;
         $livro->update($atualizarLivro);

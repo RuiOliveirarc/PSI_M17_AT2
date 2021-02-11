@@ -95,11 +95,11 @@
 			Deverá indicar um id do autor correto<br>
 		@endif
 
-	Sinópse: <textarea name="sinopse">{{$livro->sinopse}}</textarea>
+	Sinópse: <input type="file" name="sinopse" value="{{$livro->sinopse}}"></input>
 	<br>
 
 		@if ($errors->has('sinopse'))
-			Deverá indicar ua sinopse correta<br>
+			Deverá indicar uma sinopse correta<br>
 		@endif
 
 	Editora(s):

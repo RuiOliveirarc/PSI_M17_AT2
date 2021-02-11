@@ -25,6 +25,20 @@ Users:
 @endif
 
 <br>
+<br>
+
+@if(isset($livro->sinopse))
+Sinopse 
+<br>
+	<iframe src="{{asset('sinopse/livros/'.$livro->sinopse)}}">
+	</iframe>
+@endif
+
+<br>
+<br>
+
 @if(isset($livro->imagem_capa))
-	<img src="{{asset('imagens/livros/'.$livro->imagem_capa)}}">
+Imagem de capa 
+<br>
+	<img style="width: 300px; height: 300px" src="{{asset('imagens/livros/'.$livro->imagem_capa)}}">
 @endif
